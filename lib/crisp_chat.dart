@@ -82,4 +82,24 @@ class FlutterCrispChat {
       overwrite: overwrite,
     );
   }
+
+  /// Set a callback for when a Crisp session is loaded.
+  static set onSessionLoaded(void Function(String sessionId)? callback) =>
+      FlutterCrispChatPlatform.instance.onSessionLoaded = callback;
+
+  /// Set a callback for when the Crisp chat is opened.
+  static set onChatOpened(void Function()? callback) =>
+      FlutterCrispChatPlatform.instance.onChatOpened = callback;
+
+  /// Set a callback for when the Crisp chat is closed.
+  static set onChatClosed(void Function()? callback) =>
+      FlutterCrispChatPlatform.instance.onChatClosed = callback;
+
+  /// Set a callback for when a message is sent in Crisp chat.
+  static set onMessageSent(void Function(dynamic message)? callback) =>
+      FlutterCrispChatPlatform.instance.onMessageSent = callback;
+
+  /// Set a callback for when a message is received in Crisp chat.
+  static set onMessageReceived(void Function(dynamic message)? callback) =>
+      FlutterCrispChatPlatform.instance.onMessageReceived = callback;
 }

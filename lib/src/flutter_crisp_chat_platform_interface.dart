@@ -62,4 +62,11 @@ abstract class FlutterCrispChatPlatform extends PlatformInterface {
   }) {
     throw UnimplementedError('setSessionSegments() has not been implemented.');
   }
+
+  /// Event callback setters
+  set onSessionLoaded(void Function(String sessionId)? callback);
+  set onChatOpened(void Function()? callback);
+  set onChatClosed(void Function()? callback);
+  set onMessageSent(void Function(dynamic message)? callback);
+  set onMessageReceived(void Function(dynamic message)? callback);
 }

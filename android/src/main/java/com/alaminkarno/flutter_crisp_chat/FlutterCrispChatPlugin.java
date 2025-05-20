@@ -14,6 +14,8 @@ import java.util.List;
 
 import im.crisp.client.external.ChatActivity;
 import im.crisp.client.external.Crisp;
+import im.crisp.client.external.EventsCallback;
+import im.crisp.client.external.data.message.Message;
 
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -33,6 +35,51 @@ public class FlutterCrispChatPlugin implements FlutterPlugin, MethodCallHandler,
 
     private static final String CHANNEL_NAME = "flutter_crisp_chat";
 
+    private static final String EVENT_SESSION_LOADED = "onSessionLoaded";
+    private static final String EVENT_CHAT_OPENED = "onChatOpened";
+    private static final String EVENT_CHAT_CLOSED = "onChatClosed";
+    private static final String EVENT_MESSAGE_SENT = "onMessageSent";
+    private static final String EVENT_MESSAGE_RECEIVED = "onMessageReceived";
+
+    private static MethodChannel staticChannel;
+
+    private static final EventsCallback CRISP_EVENTS_CALLBACK = new EventsCallback() {
+        @Override
+        public void onSessionLoaded(@NonNull final String sessionId) {
+            if (staticChannel != null) {
+                staticChannel.invokeMethod(EVENT_SESSION_LOADED, sessionId);
+            }
+        }
+
+        @Override
+        public void onChatOpened() {
+            if (staticChannel != null) {
+                staticChannel.invokeMethod(EVENT_CHAT_OPENED, null);
+            }
+        }
+
+        @Override
+        public void onChatClosed() {
+            if (staticChannel != null) {
+                staticChannel.invokeMethod(EVENT_CHAT_CLOSED, null);
+            }
+        }
+
+        @Override
+        public void onMessageSent(@NonNull final Message message) {
+            if (staticChannel != null) {
+                staticChannel.invokeMethod(EVENT_MESSAGE_SENT, message.toJSON());
+            }
+        }
+
+        @Override
+        public void onMessageReceived(@NonNull final Message message) {
+            if (staticChannel != null) {
+                staticChannel.invokeMethod(EVENT_MESSAGE_RECEIVED, message.toJSON());
+            }
+        }
+    };
+
     private MethodChannel channel;
     private Context context;
     private Activity activity;
@@ -43,6 +90,10 @@ public class FlutterCrispChatPlugin implements FlutterPlugin, MethodCallHandler,
 
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), CHANNEL_NAME);
         channel.setMethodCallHandler(this);
+        staticChannel = channel;
+
+        // Register the callback automatically
+        Crisp.addCallback(CRISP_EVENTS_CALLBACK);
     }
 
     @Override
@@ -180,6 +231,7 @@ public class FlutterCrispChatPlugin implements FlutterPlugin, MethodCallHandler,
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         channel.setMethodCallHandler(null);
+        staticChannel = null;
         context = null;
     }
 

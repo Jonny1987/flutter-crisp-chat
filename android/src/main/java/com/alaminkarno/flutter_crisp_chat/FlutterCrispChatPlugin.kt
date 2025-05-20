@@ -19,17 +19,46 @@ class FlutterCrispChatPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     companion object {
         private const val CHANNEL_NAME = "flutter_crisp_chat"
+        private const val EVENT_SESSION_LOADED = "onSessionLoaded"
+        private const val EVENT_CHAT_OPENED = "onChatOpened"
+        private const val EVENT_CHAT_CLOSED = "onChatClosed"
+        private const val EVENT_MESSAGE_SENT = "onMessageSent"
+        private const val EVENT_MESSAGE_RECEIVED = "onMessageReceived"
+
+        private var staticChannel: MethodChannel? = null
     }
 
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
     private var activity: Activity? = null
 
+    private val crispEventsCallback = object : Crisp.EventsCallback {
+        override fun onSessionLoaded(sessionId: String) {
+            staticChannel?.invokeMethod(EVENT_SESSION_LOADED, sessionId)
+        }
+        override fun onChatOpened() {
+            staticChannel?.invokeMethod(EVENT_CHAT_OPENED, null)
+        }
+        override fun onChatClosed() {
+            staticChannel?.invokeMethod(EVENT_CHAT_CLOSED, null)
+        }
+        override fun onMessageSent(message: im.crisp.client.Message) {
+            staticChannel?.invokeMethod(EVENT_MESSAGE_SENT, message.toJSON())
+        }
+        override fun onMessageReceived(message: im.crisp.client.Message) {
+            staticChannel?.invokeMethod(EVENT_MESSAGE_RECEIVED, message.toJSON())
+        }
+    }
+
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
 
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, CHANNEL_NAME)
         channel.setMethodCallHandler(this)
+        staticChannel = channel
+
+        // Register the callback automatically
+        Crisp.addCallback(crispEventsCallback)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -126,6 +155,7 @@ class FlutterCrispChatPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        staticChannel = null
         context = null
     }
 }
