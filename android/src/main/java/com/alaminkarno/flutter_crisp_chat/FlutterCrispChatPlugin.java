@@ -46,6 +46,7 @@ public class FlutterCrispChatPlugin implements FlutterPlugin, MethodCallHandler,
     private static final EventsCallback CRISP_EVENTS_CALLBACK = new EventsCallback() {
         @Override
         public void onSessionLoaded(@NonNull final String sessionId) {
+            Log.d("FlutterCrispChatPlugin", "Java: Sending event: " + EVENT_SESSION_LOADED + " with sessionId: " + sessionId);
             if (staticChannel != null) {
                 staticChannel.invokeMethod(EVENT_SESSION_LOADED, sessionId);
             }
@@ -53,13 +54,17 @@ public class FlutterCrispChatPlugin implements FlutterPlugin, MethodCallHandler,
 
         @Override
         public void onChatOpened() {
+            Log.d("FlutterCrispChatPlugin", "Java: Sending event: " + EVENT_CHAT_OPENED);
             if (staticChannel != null) {
                 staticChannel.invokeMethod(EVENT_CHAT_OPENED, null);
+            } else {
+                Log.d("FlutterCrispChatPlugin", "Java: staticChannel is null");
             }
         }
 
         @Override
         public void onChatClosed() {
+            Log.d("FlutterCrispChatPlugin", "Java: Sending event: " + EVENT_CHAT_CLOSED);
             if (staticChannel != null) {
                 staticChannel.invokeMethod(EVENT_CHAT_CLOSED, null);
             }
@@ -67,6 +72,7 @@ public class FlutterCrispChatPlugin implements FlutterPlugin, MethodCallHandler,
 
         @Override
         public void onMessageSent(@NonNull final Message message) {
+            Log.d("FlutterCrispChatPlugin", "Java: Sending event: " + EVENT_MESSAGE_SENT + " with message: " + message.toJSON());
             if (staticChannel != null) {
                 staticChannel.invokeMethod(EVENT_MESSAGE_SENT, message.toJSON());
             }
@@ -74,6 +80,7 @@ public class FlutterCrispChatPlugin implements FlutterPlugin, MethodCallHandler,
 
         @Override
         public void onMessageReceived(@NonNull final Message message) {
+            Log.d("FlutterCrispChatPlugin", "Java: Sending event: " + EVENT_MESSAGE_RECEIVED + " with message: " + message.toJSON());
             if (staticChannel != null) {
                 staticChannel.invokeMethod(EVENT_MESSAGE_RECEIVED, message.toJSON());
             }

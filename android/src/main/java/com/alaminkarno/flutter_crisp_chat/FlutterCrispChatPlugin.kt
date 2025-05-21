@@ -34,18 +34,23 @@ class FlutterCrispChatPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private val crispEventsCallback = object : Crisp.EventsCallback {
         override fun onSessionLoaded(sessionId: String) {
+            android.util.Log.d("FlutterCrispChatPlugin", "Kotlin: Sending event: $EVENT_SESSION_LOADED with sessionId: $sessionId")
             staticChannel?.invokeMethod(EVENT_SESSION_LOADED, sessionId)
         }
         override fun onChatOpened() {
+            android.util.Log.d("FlutterCrispChatPlugin", "Kotlin: Sending event: $EVENT_CHAT_OPENED")
             staticChannel?.invokeMethod(EVENT_CHAT_OPENED, null)
         }
         override fun onChatClosed() {
+            android.util.Log.d("FlutterCrispChatPlugin", "Kotlin: Sending event: $EVENT_CHAT_CLOSED")
             staticChannel?.invokeMethod(EVENT_CHAT_CLOSED, null)
         }
         override fun onMessageSent(message: im.crisp.client.Message) {
+            android.util.Log.d("FlutterCrispChatPlugin", "Kotlin: Sending event: $EVENT_MESSAGE_SENT with message: ${message.toJSON()}")
             staticChannel?.invokeMethod(EVENT_MESSAGE_SENT, message.toJSON())
         }
         override fun onMessageReceived(message: im.crisp.client.Message) {
+            android.util.Log.d("FlutterCrispChatPlugin", "Kotlin: Sending event: $EVENT_MESSAGE_RECEIVED with message: ${message.toJSON()}")
             staticChannel?.invokeMethod(EVENT_MESSAGE_RECEIVED, message.toJSON())
         }
     }

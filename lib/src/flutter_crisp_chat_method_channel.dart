@@ -18,53 +18,81 @@ class MethodChannelFlutterCrispChat extends FlutterCrispChatPlatform {
   void Function(dynamic message)? _onMessageReceived;
 
   MethodChannelFlutterCrispChat() {
+    print('Dart: Initializing MethodChannelFlutterCrispChat');
     methodChannel.setMethodCallHandler(_handleNativeEvent);
   }
 
   Future<void> _handleNativeEvent(MethodCall call) async {
+    print(
+        'Dart: Received native event: \\${call.method} with args: \\${call.arguments}');
     switch (call.method) {
       case 'onSessionLoaded':
         if (_onSessionLoaded != null && call.arguments is String) {
+          print('Dart: Calling onSessionLoaded callback');
           _onSessionLoaded!(call.arguments as String);
         }
         break;
       case 'onChatOpened':
         if (_onChatOpened != null) {
+          print('Dart: Calling onChatOpened callback');
           _onChatOpened!();
         }
         break;
       case 'onChatClosed':
         if (_onChatClosed != null) {
+          print('Dart: Calling onChatClosed callback');
           _onChatClosed!();
         }
         break;
       case 'onMessageSent':
         if (_onMessageSent != null) {
+          print('Dart: Calling onMessageSent callback');
           _onMessageSent!(call.arguments);
         }
         break;
       case 'onMessageReceived':
         if (_onMessageReceived != null) {
+          print('Dart: Calling onMessageReceived callback');
           _onMessageReceived!(call.arguments);
         }
         break;
     }
   }
 
-  // Event callback setters
+  /// Register a callback for when a Crisp session is loaded.
   @override
-  set onSessionLoaded(void Function(String sessionId)? callback) =>
-      _onSessionLoaded = callback;
+  set onSessionLoaded(void Function(String sessionId)? callback) {
+    print('Dart: Registered onSessionLoaded callback');
+    _onSessionLoaded = callback;
+  }
+
+  /// Register a callback for when the Crisp chat is opened.
   @override
-  set onChatOpened(void Function()? callback) => _onChatOpened = callback;
+  set onChatOpened(void Function()? callback) {
+    print('Dart: Registered onChatOpened callback');
+    _onChatOpened = callback;
+  }
+
+  /// Register a callback for when the Crisp chat is closed.
   @override
-  set onChatClosed(void Function()? callback) => _onChatClosed = callback;
+  set onChatClosed(void Function()? callback) {
+    print('Dart: Registered onChatClosed callback');
+    _onChatClosed = callback;
+  }
+
+  /// Register a callback for when a message is sent in Crisp chat.
   @override
-  set onMessageSent(void Function(dynamic message)? callback) =>
-      _onMessageSent = callback;
+  set onMessageSent(void Function(dynamic message)? callback) {
+    print('Dart: Registered onMessageSent callback');
+    _onMessageSent = callback;
+  }
+
+  /// Register a callback for when a message is received in Crisp chat.
   @override
-  set onMessageReceived(void Function(dynamic message)? callback) =>
-      _onMessageReceived = callback;
+  set onMessageReceived(void Function(dynamic message)? callback) {
+    print('Dart: Registered onMessageReceived callback');
+    _onMessageReceived = callback;
+  }
 
   /// [openCrispChat] is use to invoke the Method Channel and call native
   /// code with arguments `websiteID`.
