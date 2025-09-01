@@ -176,7 +176,7 @@ public class SwiftFlutterCrispChatPlugin: NSObject, FlutterPlugin, UIApplication
         if CrispSDK.isCrispPushNotification(notification) {
             CrispSDK.handlePushNotification(notification)
             if #available(iOS 14.0, *) {
-                completionHandler([.banner, .sound])
+                completionHandler([.banner, .list, .sound])
             } else {
                 completionHandler([.alert, .sound])
             }
@@ -192,7 +192,7 @@ public class SwiftFlutterCrispChatPlugin: NSObject, FlutterPlugin, UIApplication
 
         // Default behavior: do show non-Crisp notifications in foreground
         if #available(iOS 14.0, *) {
-            completionHandler([.banner, .sound])
+            completionHandler([.banner, .list, .sound])
         } else {
             completionHandler([.alert, .sound])
         }
