@@ -25,10 +25,25 @@ public class SwiftFlutterCrispChatPlugin: NSObject, FlutterPlugin, UIApplication
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
 
-        // Chain UNUserNotificationCenter delegate instead of hijacking it outright
+        // Decide whether to replace the existing UNUserNotificationCenter delegate.
+        // If the current delegate is Flutter's lifecycle provider (which multiplexes
+        // notifications to all registered plugins), do not replace it to avoid
+        // recursive forwarding loops. Otherwise, replace it and forward to the
+        // previous delegate so any existing notification handling continues to work
         let center = UNUserNotificationCenter.current()
-        instance.previousNotificationCenterDelegate = center.delegate
-        center.delegate = instance
+        var shouldReplaceDelegate = true
+
+        if let existingDelegate = center.delegate {
+            if let flutterProviderProtocol = NSProtocolFromString("FlutterAppLifeCycleProvider"),
+               (existingDelegate as AnyObject).conforms(to: flutterProviderProtocol) {
+                shouldReplaceDelegate = false
+            }
+        }
+
+        if shouldReplaceDelegate {
+            instance.previousNotificationCenterDelegate = center.delegate
+            center.delegate = instance
+        }
     }
 
     /// Handles method calls from Flutter to native iOS.
